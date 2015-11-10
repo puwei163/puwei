@@ -1,0 +1,425 @@
+<extend name="Common:add"/>
+<block name="css">
+    <link href="__ZTREE_V3__/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" type="text/css"/>
+    <link href="__UPLOADIFY__/uploadify.css" rel="stylesheet" type="text/css"/>
+
+</block>
+<block name="content">
+    <div id="tabbar-div">
+        <p>
+            <span class="tab-front">通用信息</span>
+            <span class="tab-back">商品描述</span>
+            <span class="tab-back">会员价格</span>
+            <span class="tab-back">商品属性</span>
+            <span class="tab-back">商品相册</span>
+            <span class="tab-back">关联文章</span>
+        </p>
+    </div>
+    <div class="main-div">
+        <form method="post" action="{:U()}">
+            <table cellspacing="1" cellpadding="3" width="100%" style="display: none">
+                <tr>
+                    <td class="label">名称</td>
+                    <td>
+                        <input type="text" name="name" value="{$row.name|default=''}"> <span
+                            class="require-field">*</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="label">商品分类</td>
+                    <td>
+                        <input type="text" class="goods_category_text" name="goods_category_text" disabled="disabled"
+                               value="请选择下面的分类"> <span
+                            class="require-field">*</span>
+                        <input type="hidden" class="goods_category_id" name="goods_category_id"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td>
+                        <ul id="treeDemo" class="ztree"></ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">品牌</td>
+                    <td>
+                        {:arr2select('brand_id',$brands,$row['brand_id'])}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">供货商</td>
+                    <td>
+                        {:arr2select('supplier_id',$supplier,$row['supplier_id'])}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">本店价格</td>
+                    <td>
+                        <input type="text" name="shop_price" value="{$row.shop_price|default=''}"> <span
+                            class="require-field">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">市场价格</td>
+                    <td>
+                        <input type="text" name="market_price" value="{$row.market_price|default=''}"> <span
+                            class="require-field">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">库存</td>
+                    <td>
+                        <input type="text" name="stock" value="{$row.stock|default=''}"> <span
+                            class="require-field">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">是否上架</td>
+                    <td>
+                        <input type="radio" name="is_on_sale" class="status_is" value="1">是
+                        <input type="radio" name="is_on_sale" class="status_is" value="0">否 <span
+                            class="require-field">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">商品状态</td>
+                    <td>
+                        <input type="checkbox" name="goods_status[]" class="goods_status" value="1">精品
+                        <input type="checkbox" name="goods_status[]" class="goods_status" value="2">新品
+                        <input type="checkbox" name="goods_status[]" class="goods_status" value="4">热销
+                        <span class="require-field">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">关键字</td>
+                    <td>
+
+                        <input type="text" name="keyword" value="{$row.keyword|default=''}"> <span
+                            class="require-field">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">LOGO</td>
+                    <td>
+
+                        <input type="file" name="upload-logo" id="upload-logo" maxlength="60">
+                        <input type="hidden" class="logo" name="logo" value="{$logo}">
+
+                        <div class="upload-img-box" style="display: {$row.logo?'block':'none'}">
+                            <div class="upload-pre-item">
+                                <img src="__GOODSPATH__/{$row.logo}">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">状态</td>
+                    <td>
+
+                        <input type="radio" name="status" class="status" value="1">是 <input type="radio" name="status"
+                                                                                            class="status" value="0">否
+                        <span class="require-field">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">排序</td>
+                    <td>
+
+                        <input type="text" name="sort" value="{$row.sort|default=20}"> <span
+                            class="require-field">*</span>
+                    </td>
+                </tr>
+            </table>
+            <table cellspacing="1" cellpadding="3" width="100%" style="display: none">
+                <tr>
+                    <td >
+                        <textarea name="intro" id="intro">{$intro}</textarea>
+                    </td>
+                </tr>
+            </table>
+            <table cellspacing="1" cellpadding="3" width="100%" style="display: block">
+                <!--会员价格开始-->
+                <volist name="memberLevels" id="memberLevel">
+                <tr>
+
+                    <td class="label">{$memberLevel.name}</td>
+                    <td>
+                        <input type="text" name="memberPrice[{$memberLevel.id}]" maxlength="60"
+                               value="{$goodsMemberPrice[$memberLevel['id']]}"> <span
+                            class="require-field">*</span>
+                    </td>
+                </tr>
+                </volist>
+                <!--会员价格结束-->
+            </table>
+            <table cellspacing="1" cellpadding="3" width="100%" style="display: none">
+                <tr>
+                    <td class="label">商品属性</td>
+                    <td>
+                        <input type="text" name="sort" maxlength="60" value="{$sort|default=20}"> <span
+                            class="require-field">*</span>
+                    </td>
+                </tr>
+
+
+            </table>
+            <table cellspacing="1" cellpadding="3" width="100%" style="display: none">
+                <tr>
+                    <td>
+                        <div class="upload-img-gallery">
+                            <div class="upload-pre-item" style="display: inline-block">
+                                <volist name="goodsGallerys" id="goodsGallery">
+                                    <img style="width: 100px" src="__GOODSPATH__/{$goodsGallery.path}">
+                                    <a href="javascript:;" dbid="{$goodsGallery.id}" style="color: red">X</a>
+                                </volist>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="file" name="upload-logo" id="upload-gallery" maxlength="60">
+                        (支持批量上传)
+                    </td>
+                </tr>
+            </table>
+            <table cellspacing="1" cellpadding="3" width="100%" style="display: none">
+                <tr>
+                    <td class="label" style="text-align: left;">
+                        <div style="width: 300px">
+                        文章搜索: <input  type="text" class="keyword" name="keyword">
+                        <input class="search_article" type="button" value="搜索" >
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">
+                        <select multiple="multiple" class="left_select" style="width: 100%;height: 300px"></select>
+                    </td>
+                    <td style="text-align: right;">
+                        <div class="selectedOption">
+                            <volist name="goodsAritcles" id="goodsAritcle">
+                                <input type="hidden" name="article_id[]" value="{$goodsAritcle.id}"/>
+                            </volist>
+                         </div>
+                        <select multiple="multiple" class="rifht_select" style="width: 50%;height: 300px;">
+                            <volist name="goodsAritcles" id="goodsAritcle">
+                                    <option value="{$goodsAritcle.id}">{$goodsAritcle.name}</option>
+                              </volist>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+    </div>
+    <div style="text-align: center">
+        <input type="hidden" name="id" value="{$row.id}"/>
+        <input type="submit" class="button" value=" 确定 "/>
+        <input type="reset" class="button" value=" 重置 "/>
+    </div>
+    </form>
+</block>
+<block name="js">
+    <script type="text/javascript" src="__ZTREE_V3__/js/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="__UPLOADIFY__/jquery.uploadify.js"></script>
+    <script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>
+    <script type="text/javascript" src="__UEDITOR__/ueditor.config.js"></script>
+    <script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+
+
+            /////////////////////////切换特效 开始//////////////////////////////
+            //在所有的span加上点击事件
+            $('#tabbar-div span').click(function () {
+                //先改变使用的span的class='tab-back'
+                $('#tabbar-div span').removeClass('tab-front').addClass('tab-back');
+                //然后把当前span的点击改变
+                $(this).removeClass('tab-back').addClass('tab-front');
+                //然后把对应的table显示出来
+                var index =$(this).index();
+                $('form>table').hide().eq(index).show();
+                if(index==1){  //判断点击是不是描述,是就加载
+                    /////////////////////////////商品描述在线编辑器   开始
+                    UE.getEditor('intro',{
+                        initialFrameHeight:500  //初始化编辑器高度,默认320
+                    })
+                }
+                /////////////////////////////商品描述在线编辑器   结束
+            })
+            /////////////////////////切换特效 结束//////////////////////////////
+
+            /////////////////////////////商品分类树   开始//////////////////////
+
+            //>>1.树的设置
+            var setting = {
+                data: {
+                    simpleData: {
+                        enable: true, //编辑状态
+                        pIdKey: "parent_id", //节点数据中保存其父节点唯一标识的属性名称
+                    }
+                },
+                callback: { //树里面的点击事件 开始
+                    onClick: function (event, treeId, treeNode) {
+                        $('.goods_category_id').val(treeNode.id);
+                        $('.goods_category_text').val(treeNode.name);
+                    },
+                    beforeClick: function (treeId, treeNode, clickFlag) {
+                        if (treeNode.isParent) {
+                            layer.msg('必须选择最小分类', {
+                                offset: 0,
+                                icon: 0,
+                            });
+                        }
+                        //如果该分类有子节点就返回false ,false表示不选中
+                        return !treeNode.isParent;
+                    }
+                },
+            };
+            //数里面的点击事件 结束
+            var nodes = {$nodes};  //准备数的数据
+            //给页面分配数据
+            treeObject = $.fn.zTree.init($("#treeDemo"), setting, nodes);
+            //判断页面是否有ID的值,有ID表示回显
+
+            <notempty name= 'id'>
+                var goods_category_id ={$row.goods_category_id};
+                var node  = treeObject.getNodeByParam('id',goods_category_id);
+                 treeObject.selectNode(node);
+                  //并且将选中的节点的id,name设置
+                  $('.goods_category_id').val(node.id);
+                     $('.goods_category_text').val(node.name);
+              <else/>
+            treeObject.expandAll(true);   //树全部打开
+            </notempty>
+
+                /////////////////////////////商品分类树   结束//////////////////////
+                /////////////////////////////图片上传   开始//////////////////////
+
+            window.setTimeout(function () {
+                $("#upload-logo").uploadify({
+                    height: 30, //指定删除插件的高和宽
+                    width: 120,
+                    swf: "__UPLOADIFY__/uploadify.swf",//指定SWF地址
+                    uploader: '{:U("uploader/index")}',//服务器处理上传PHP
+                    buttonText: '选择图片',   //上传按钮上面的文字
+                    //                'fileSizeLimit': '100KB',  //限制大小
+                    formData: {'dir': 'logo'},   //通过post方式传递的额外参数
+                    multi: false,   //是否支持多文件上传
+                    onUploadSuccess: function (file, data, response) {   //上传成功时执行的方法
+                        $('.logo').val(data);
+                        $('.upload-img-box').show();
+                        $('.upload-img-box img').attr('src', "__GOODS__/" + data + '!m');
+                    },
+                    onUploadError: function (file, errorCode, errorMsg, errorString) { //上传失败时该方法执行
+                        alert('该文件上传失败!错误信息为:' + errorString);
+                    }
+                })
+            }, 10);
+            /////////////////////////////图片上传   结束//////////////////////
+            /////////////////////////////回显是否上架 开始//////////////////
+            $('.status_is').val([{$row.is_on_sale|default= 1}]);
+            /////////////////////////////回显是否上架 结束//////////////////
+
+             /////////////////////////////编辑时回显商品状态  开始////////////////////
+            <notempty name='id'>
+                        var goods_status={$row.goods_status};
+                        var goods_status_value=new Array();
+                        if((goods_status & 1) >0){
+                            goods_status_value.push(1);
+                        }if((goods_status & 2) >0){
+                            goods_status_value.push(2);
+                        }if((goods_status & 4) >0){
+                            goods_status_value.push(4);
+                        }
+                    $('.goods_status').val(goods_status_value);
+            </notempty>
+             /////////////////////////////编辑时回显商品状态  结束////////////////////
+             /////////////////////////////商品相册上传插件  结束////////////////////
+        window.setTimeout(function () {
+                        $("#upload-gallery").uploadify({
+                            height: 30, //指定删除插件的高和宽
+                            width: 120,
+                            swf: "__UPLOADIFY__/uploadify.swf",//指定SWF地址
+                            uploader: '{:U("uploader/index")}',//服务器处理上传PHP
+                            buttonText: '选择图片',   //上传按钮上面的文字
+                            //                'fileSizeLimit': '100KB',  //限制大小
+                            formData: {'dir': 'goods'},   //通过post方式传递的额外参数
+                            multi: true,   //是否支持多文件上传
+                            onUploadSuccess: function (file, data, response) {   //上传成功时执行的方法
+                               var html ='<div class="upload-pre-item"style="display: inline-block">\
+                                        <img src="__GOODSPATH__/'+data+'" style="width:100px">\
+                                         <input type="hidden" class="path" \
+                                         name="gallery_path[]" value="'+data+'">\
+                                          <a href="javascript:;" style="color: red">X</a>\
+                                          </div>';
+
+//                                alert(data)
+                                $(html).appendTo('.upload-img-gallery');
+
+                            },
+                            onUploadError: function (file, errorCode, errorMsg, errorString) { //上传失败时该方法执行
+                                alert('该文件上传失败!错误信息为:' + errorString);
+                            }
+                        })
+                    }, 10);
+        //删除商品相册的数据
+                $('.upload-img-gallery').on('click','a',function(){
+                    var dbid=$(this).attr('dbid');
+                    //判断有没有值有就发送ajax从数据库里面删除
+                    if(dbid){
+                        var that = $(this);
+                        //>>2. 如果存在,需要发送ajax请求让服务器删除数据库中数据
+                        $.post("{:U('deleteGallery')}",{gallery_id:dbid},function(data){
+                            if(data.success){
+                               that.closest('div').remove();
+                            }
+                        })
+                    }else{
+                        //>>3.如果不存在直接从页面上删除
+                        $(this).closest('div').remove();
+
+                    }
+                })
+             /////////////////////////////商品相册上传插件  结束////////////////////
+        /////////////////////////////关联文章   开始////////////////////////////////////////////
+            $('.search_article').click(function(){
+                loadArticle();
+            })
+        //根据关键字查询文章
+        function loadArticle(){
+            $.getJSON('{:U("Article/search")}',{keyword:$('.keyword').val()},function(data){
+                var option_html="";
+                $(data).each(function(){
+                    option_html+="<option value='"+this.id+"'>"+this.name+"</option>"
+                })
+                $(option_html).appendTo('.left_select');
+            })
+        };
+        $('.rifht_select').on('dblclick','option',function(){
+            $(this).appendTo('.left_select');
+            select2Hidden();
+        });
+
+        //给option添加双击事件
+        $('.left_select').on('dblclick','option',function(){
+            $(this).appendTo('.rifht_select');
+            select2Hidden();
+        })
+        function select2Hidden(){
+            var hiddenHtml="";
+           $('.rifht_select>option').each(function(){
+               hiddenHtml+="<input type='hidden' name='article_id[]' value='"+this.value+"'/>"
+           })
+            $('.selectedOption').empty();//将隐藏域放到div中之前先清空
+            $(hiddenHtml).appendTo(".selectedOption");
+
+        }
+        /////////////////////////////关联文章   结束////////////////////////////////////////////
+
+        })
+    </script>
+</block>
